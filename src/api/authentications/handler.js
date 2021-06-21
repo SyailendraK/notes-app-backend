@@ -41,6 +41,7 @@ class AuthenticationsHandler {
           message: error.message,
         });
         response.code(error.statusCode);
+        console.error(error);
         return response;
       }
 

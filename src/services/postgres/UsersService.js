@@ -15,7 +15,7 @@ class UsersService {
 
     const id = `user-${nanoid(16)}`;
     const hashedPassword = await bcrypt.hash(password, 10);
-
+    console.log(`user: ${id} || pass: ${hashedPassword}`);
     const query = {
       text: 'INSERT INTO users VALUES($1, $2, $3, $4) RETURNING id',
       values: [id, username, hashedPassword, fullname],
@@ -72,10 +72,20 @@ class UsersService {
     const match = await bcrypt.compare(password, hashedPassword);
 
     if (!match) {
+      console.log(`verify user: ${id} || pass: ${hashedPassword}`);
       throw new AuthenticationError('Kredensial yang Anda berikan salah');
     }
 
     return id;
+  }
+
+  async getUsersByUsername(username) {
+    const query = {
+      text: 'SELECT id, username, fullname FROM users WHERE username LIKE $1',
+      values: [`%${username}%`],
+    };
+    const result = await this._pool.query(query);
+    return result.rows;
   }
 }
 
